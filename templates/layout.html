@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pizzas el Crustáceo Cascarudo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="{{url_for('static',filename='dist/output.css')}}">
+<style>
+    body {
+        background-image: url("{{url_for('static',filename='img/fondo.jpg')}}");
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+    }
+
+    /* Textura de madera mejorada similar a la imagen */
+    .bg-wood { 
+        background-color: #a67c52;
+        background-image: 
+            linear-gradient(90deg, rgba(0,0,0,0.1) 1px, transparent 1px),
+            url("https://www.transparenttextures.com/patterns/wood-pattern.png");
+        background-size: 40px 100%, auto; /* Simula tablones de madera */
+        border-bottom: 4px solid #471E15;
+    }
+
+    .font-spongebob-yellow {
+        color: #f3e03b;
+        text-shadow: 
+            2px 2px 0px #000, 
+            -1px -1px 0px #000, 
+            1px -1px 0px #000, 
+            -1px 1px 0px #000;
+        font-family: 'Arial Black', sans-serif;
+    }
+
+    /* Estilo para los enlaces sobre madera */
+    .nav-link {
+        color: #f3e03b !important;
+        font-weight: bold;
+        text-transform: uppercase;
+        text-shadow: 1px 1px 2px #000;
+    }
+    .nav-link:hover {
+        color: #fff !important;
+        text-decoration: underline;
+    }
+</style>
+</head>
+<body>
+    <header>
+        <nav class="bg-wood py-4 px-6">
+            <div class="container mx-auto flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <img src="{{url_for('static',filename='img/crustaceo.jpg')}}" class="h-12 w-12 rounded-full border-2 border-yellow-400 shadow-lg">
+                    <span class="text-2xl font-black uppercase font-spongebob-yellow tracking-tighter">
+                        Pizzas el Crustáceo Cascarudo
+                    </span>
+                </div>
+
+                <div class="hidden md:block">
+                    <ul class="flex space-x-8">
+                        <li>
+                            <a href="index" class="nav-link text-sm">Inicio</a>
+                        </li>
+                        <li>
+                            <a href="pedidos" class="nav-link text-sm">Pedidos</a>
+                        </li>
+                        <li>
+                            <a href="consultas" class="nav-link text-sm">Consultas</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="p-8">
+        {% block container %}
+        {% endblock %}
+    </main>
+    
+    <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
+</body>
+</html>
