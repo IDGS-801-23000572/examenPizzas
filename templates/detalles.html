@@ -1,0 +1,104 @@
+{% extends "layout.html" %}
+{% block container %}
+
+<div class="flex flex-col items-center justify-start min-h-screen py-10 px-4 space-y-8">
+    
+    <div class="glass-panel w-full max-w-4xl rounded-[3rem] border-4 border-[#471E15] bg-black/60 backdrop-blur-lg shadow-2xl overflow-hidden">
+        
+        <div class="bg-wood p-6 border-b-4 border-[#471E15] flex justify-between items-center">
+            <h2 class="text-3xl md:text-4xl font-black uppercase font-spongebob-yellow italic tracking-tighter">
+                Visualización de Detalle
+            </h2>
+            <a href="{{ url_for('consultas') }}" class="bg-yellow-400 hover:bg-yellow-500 text-[#471E15] px-6 py-2 rounded-xl font-black text-xs uppercase border-b-4 border-yellow-700 transition-all active:scale-95 flex items-center gap-2">
+                <span>← Volver</span>
+            </a>
+        </div>
+
+        <div class="p-8 md:p-12 space-y-8">
+            
+            <!-- Encabezado del pedido -->
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center bg-black/40 p-6 rounded-2xl border border-white/10 border-l-8 border-l-yellow-400">
+                <div>
+                    <span class="text-yellow-400 font-bold uppercase text-[10px] tracking-[0.2em]">Identificador</span>
+                    <h3 class="text-white text-3xl font-black font-spongebob-yellow">Pedido #{{ pedido.id_pedido }}</h3>
+                </div>
+                <div class="mt-4 md:mt-0 md:text-right">
+                    <span class="text-yellow-400 font-bold uppercase text-[10px] tracking-[0.2em]">Fecha:</span>
+                    <p class="text-white text-2xl font-black font-spongebob-yellow">{{ pedido.fecha.strftime('%d/%m/%Y') }}</p>
+                    <p class="text-white/50 text-sm font-bold uppercase">{{ dias_es[pedido.fecha.weekday()] }}</p>
+                </div>
+            </div>
+
+            <!-- Datos del cliente -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 bg-white/5 p-8 rounded-3xl border border-white/10">
+                <div class="space-y-3">
+                    <p class="text-yellow-400 font-bold uppercase text-[10px] tracking-widest border-b border-yellow-400/20 pb-1">Nombre del Cliente</p>
+                    <p class="text-white text-xl font-bold">{{ pedido.cliente.nombre }}</p>
+                    
+                    <p class="text-yellow-400 font-bold uppercase text-[10px] tracking-widest mt-6 border-b border-yellow-400/20 pb-1">Dirección registrada</p>
+                    <p class="text-white/80 text-base italic">{{ pedido.cliente.direccion }}</p>
+                </div>
+                <div class="space-y-3 md:text-right">
+                    <p class="text-yellow-400 font-bold uppercase text-[10px] tracking-widest border-b border-yellow-400/20 pb-1">Contacto</p>
+                    <p class="text-white text-lg font-semibold">{{ pedido.cliente.telefono }}</p>
+                </div>
+            </div>
+
+            <!-- Tabla de pizzas -->
+            <div class="space-y-4">
+                <p class="text-yellow-400 font-black uppercase italic text-sm tracking-widest ml-2">Pizzas en este pedido:</p>
+                <div class="overflow-hidden rounded-2xl border-2 border-[#471E15] bg-black/30">
+                    <table class="w-full text-left text-sm text-white">
+                        <thead class="bg-wood text-yellow-400 uppercase text-[10px] font-bold">
+                            <tr>
+                                <th class="p-4 border-b border-[#471E15]">Pizza (Tamaño)</th>
+                                <th class="p-4 border-b border-[#471E15]">Ingredientes</th>
+                                <th class="p-4 border-b border-[#471E15] text-center">Cant.</th>
+                                <th class="p-4 border-b border-[#471E15] text-right">Precio u.</th>
+                                <th class="p-4 border-b border-[#471E15] text-right">Subtotal</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-white/10 font-bold">
+                            {% for det in detalles %}
+                            <tr class="hover:bg-white/5 transition-colors">
+                                <td class="p-4">{{ det.pizza.tamano }}</td>
+                                <td class="p-4 text-xs text-white/50 font-normal italic">
+                                    {{ det.pizza.ingredientes if det.pizza.ingredientes else '—' }}
+                                </td>
+                                <td class="p-4 text-center">{{ det.cantidad }}</td>
+                                <td class="p-4 text-right text-white/70">${{ "%.2f"|format(det.pizza.precio) }}</td>
+                                <td class="p-4 text-right text-green-400 text-lg">${{ "%.2f"|format(det.subtotal) }}</td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="5" class="p-6 text-center text-gray-500 italic">Sin detalles registrados.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+                <a href="{{ url_for('consultas') }}" class="flex-1 h-10 flex items-center justify-center bg-white/20 hover:bg-white/30 text-white font-black uppercase rounded-lg shadow-md transition-transform active:scale-95 italic text-sm border-b-4 border-white/40">
+                    Volver
+                </a>
+            <!-- Total -->
+            <div class="pt-6 border-t border-white/10 text-right">
+                <span class="text-white/60 uppercase text-[10px] font-bold italic mr-4">Total del pedido:</span>
+                <p class="text-6xl font-black text-green-400 font-spongebob-yellow inline-block">${{ "%.2f"|format(pedido.total) }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .bg-wood { 
+        background-color: #7e4a35; 
+        background-image: url("https://www.transparenttextures.com/patterns/wood-pattern.png"); 
+    }
+    .font-spongebob-yellow {
+        paint-order: stroke fill;
+        filter: drop-shadow(4px 4px 0px rgba(0,0,0,1));
+    }
+</style>
+
+{% endblock %}

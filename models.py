@@ -52,8 +52,8 @@ class Detalles(db.Model):
         nullable=False)
     cantidad = db.Column(db.Integer)
     subtotal = db.Column(db.Numeric(10,2))
+    pizza = db.relationship('Pizzas', foreign_keys=[id_pizza])
 
     __table_args__ = (
         db.UniqueConstraint('id_pedido', 'id_pizza', name='uq_pedido_pizza'),
     )
-

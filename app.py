@@ -120,8 +120,43 @@ def terminarPedido():
 
 
 @app.route("/consultas")
-def func():
-	return render_template("consultas.html")
+def consultas():
+    DIAS_ES = {0: 'Lunes', 1: 'Martes', 2: 'Miercoles',
+               3: 'Jueves', 4: 'Viernes', 5: 'Sabado', 6: 'Domingo'}
+
+    dia_filtro = request.args.get('dia', '').strip()
+    mes_filtro = request.args.get('mes', '').strip()
+
+    query = db.session.query(Pedidos).join(Clientes)
+
+    if mes_filtro:
+        query = query.filter(db.extract('month', Pedidos.fecha) == int(mes_filtro))
+
+    pedidos = query.order_by(Pedidos.fecha.desc()).all()
+
+    if dia_filtro:
+        pedidos = [p for p in pedidos if DIAS_ES.get(p.fecha.weekday()) == dia_filtro]
+
+    total_acumulado = sum(float(p.total) for p in pedidos)
+
+    return render_template("consultas.html",
+                           pedidos=pedidos,
+                           dias_es=DIAS_ES,
+                           total_acumulado=total_acumulado,
+                           dia_filtro=dia_filtro,
+                           mes_filtro=mes_filtro)
+
+
+@app.route("/detalles/<int:id_pedido>")
+def detalles(id_pedido):
+    pedido = db.session.query(Pedidos).join(Clientes).filter(Pedidos.id_pedido == id_pedido).first_or_404()
+    detalles_pedido = db.session.query(Detalles).join(Pizzas).filter(Detalles.id_pedido == id_pedido).all()
+    DIAS_ES = {0: 'Lunes', 1: 'Martes', 2: 'Miercoles',
+               3: 'Jueves', 4: 'Viernes', 5: 'Sabado', 6: 'Domingo'}
+    return render_template("detalles.html",
+                           pedido=pedido,
+                           detalles=detalles_pedido,
+                           dias_es=DIAS_ES)
 
 
 @app.errorhandler(404)

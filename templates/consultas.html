@@ -1,17 +1,119 @@
 {% extends "layout.html" %}
 {% block container %}
-           
-           <div class="glass-panel p-3 rounded-lg border border-yellow-600 flex flex-col justify-between h-48 shadow-2xl">
-                <h3 class="text-center font-bold text-[10px] text-[#471E15] uppercase border-b border-yellow-600/30 pb-1">Ventas del día</h3>
-                <div class="flex-1 text-[#471E15] text-[11px] font-bold py-2 overflow-y-auto">
-                    <div class="flex justify-between bg-black/5 px-2 rounded">
-                        <span></span>
-                        <span></span>
-                    </div>
-                </div>
-                <div class="text-center pt-2">
-                    <p class="text-xl font-spongebob text-[#471E15]">Total: </p>
-                </div>
+
+<div class="flex flex-col items-center justify-start min-h-screen py-8 px-4 space-y-6">
+    
+    <div class="glass-panel w-full max-w-6xl p-8 rounded-[2.5rem] border-4 border-[#471E15] bg-black/60 backdrop-blur-md shadow-2xl">
+        
+        <h2 class="text-4xl md:text-5xl font-black uppercase font-spongebob-yellow text-center mb-8 italic tracking-tighter">
+            Registro de Ventas
+        </h2>
+
+        <form action="{{ url_for('consultas') }}" method="GET" class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 p-6 rounded-2xl border-2 border-[#471E15] bg-[#7e4a35] shadow-inner">
+            <div class="flex flex-col space-y-1">
+                <label class="text-white font-bold uppercase text-[10px] tracking-widest ml-1">Filtrar por día</label>
+                <select name="dia" class="w-full p-2 rounded-lg bg-black/30 border border-yellow-400/50 text-white focus:border-yellow-400 outline-none appearance-none cursor-pointer text-sm">
+                    <option value="">Todos los días</option>
+                    <option value="Lunes"     {% if dia_filtro == 'Lunes'      %}selected{% endif %}>Lunes</option>
+                    <option value="Martes"    {% if dia_filtro == 'Martes'     %}selected{% endif %}>Martes</option>
+                    <option value="Miercoles" {% if dia_filtro == 'Miercoles'  %}selected{% endif %}>Miércoles</option>
+                    <option value="Jueves"    {% if dia_filtro == 'Jueves'     %}selected{% endif %}>Jueves</option>
+                    <option value="Viernes"   {% if dia_filtro == 'Viernes'    %}selected{% endif %}>Viernes</option>
+                    <option value="Sabado"    {% if dia_filtro == 'Sabado'     %}selected{% endif %}>Sábado</option>
+                    <option value="Domingo"   {% if dia_filtro == 'Domingo'    %}selected{% endif %}>Domingo</option>
+                </select>
             </div>
-            
+
+            <div class="flex flex-col space-y-1">
+                <label class="text-white font-bold uppercase text-[10px] tracking-widest ml-1">Filtrar por mes</label>
+                <select name="mes" class="w-full p-2 rounded-lg bg-black/30 border border-yellow-400/50 text-white focus:border-yellow-400 outline-none appearance-none cursor-pointer text-sm">
+                    <option value="">Todos los meses</option>
+                    <option value="01" {% if mes_filtro == '01' %}selected{% endif %}>Enero</option>
+                    <option value="02" {% if mes_filtro == '02' %}selected{% endif %}>Febrero</option>
+                    <option value="03" {% if mes_filtro == '03' %}selected{% endif %}>Marzo</option>
+                    <option value="04" {% if mes_filtro == '04' %}selected{% endif %}>Abril</option>
+                    <option value="05" {% if mes_filtro == '05' %}selected{% endif %}>Mayo</option>
+                    <option value="06" {% if mes_filtro == '06' %}selected{% endif %}>Junio</option>
+                    <option value="07" {% if mes_filtro == '07' %}selected{% endif %}>Julio</option>
+                    <option value="08" {% if mes_filtro == '08' %}selected{% endif %}>Agosto</option>
+                    <option value="09" {% if mes_filtro == '09' %}selected{% endif %}>Septiembre</option>
+                    <option value="10" {% if mes_filtro == '10' %}selected{% endif %}>Octubre</option>
+                    <option value="11" {% if mes_filtro == '11' %}selected{% endif %}>Noviembre</option>
+                    <option value="12" {% if mes_filtro == '12' %}selected{% endif %}>Diciembre</option>
+                </select>
+            </div>
+
+            <div class="flex gap-2 items-end">
+                <button type="submit" class="flex-1 h-10 bg-yellow-400 hover:bg-yellow-500 text-[#471E15] font-black uppercase rounded-lg shadow-md transition-transform active:scale-95 italic text-sm border-b-4 border-yellow-700">
+                    Filtrar
+                </button>
+                <a href="{{ url_for('consultas') }}" class="flex-1 h-10 flex items-center justify-center bg-white/20 hover:bg-white/30 text-white font-black uppercase rounded-lg shadow-md transition-transform active:scale-95 italic text-sm border-b-4 border-white/40">
+                    Limpiar
+                </a>
+            </div>
+        </form>
+
+        <div class="overflow-hidden rounded-xl border-2 border-[#471E15] bg-black/40">
+            <table class="w-full text-center text-white border-collapse">
+                <thead class="bg-wood text-yellow-400 uppercase text-xs tracking-widest">
+                    <tr>
+                        <th class="p-4 border-b-2 border-[#471E15]">#</th>
+                        <th class="p-4 border-b-2 border-[#471E15]">Cliente</th>
+                        <th class="p-4 border-b-2 border-[#471E15]">Fecha</th>
+                        <th class="p-4 border-b-2 border-[#471E15]">Día</th>
+                        <th class="p-4 border-b-2 border-[#471E15]">Total</th>
+                        <th class="p-4 border-b-2 border-[#471E15]">Acción</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-white/10 font-bold">
+                    {% for pedido in pedidos %}
+                    <tr class="hover:bg-white/5 transition-colors">
+                        <td class="p-4 text-yellow-400">{{ pedido.id_pedido }}</td>
+                        <td class="p-4">{{ pedido.cliente.nombre }}</td>
+                        <td class="p-4 text-sm text-white/70">{{ pedido.fecha.strftime('%d/%m/%Y') }}</td>
+                        <td class="p-4 text-sm">{{ dias_es[pedido.fecha.weekday()] }}</td>
+                        <td class="p-4 text-green-400">${{ "%.2f"|format(pedido.total) }}</td>
+                        <td class="p-4">
+                            <a href="{{ url_for('detalles', id_pedido=pedido.id_pedido) }}"
+                               class="inline-block px-4 py-1 bg-yellow-400 hover:bg-yellow-500 text-[#471E15] font-black uppercase text-[10px] rounded-lg border-b-2 border-yellow-700 transition-all active:scale-95">
+                                Ver Detalle
+                            </a>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr class="opacity-30">
+                        <td class="p-8 italic text-sm text-gray-400" colspan="6">
+                            No hay registros que mostrar...
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="mt-6 flex justify-end items-center space-x-4 p-4 border-t border-white/10">
+            <span class="text-white uppercase text-xs font-bold italic">Recaudación Total:</span>
+            <span class="text-3xl font-black text-yellow-400 font-spongebob-yellow">${{ "%.2f"|format(total_acumulado) }}</span>
+        </div>
+
+    </div>
+</div>
+
+<style>
+    .bg-wood { 
+        background-color: #7e4a35; 
+        background-image: url("https://www.transparenttextures.com/patterns/wood-pattern.png"); 
+    }
+    .font-spongebob-yellow {
+        paint-order: stroke fill;
+        filter: drop-shadow(3px 3px 0px rgba(0,0,0,1));
+    }
+    select {
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23f3e03b' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+        background-position: right 0.5rem center;
+        background-repeat: no-repeat;
+        background-size: 1.2em 1.2em;
+    }
+</style>
+
 {% endblock %}
